@@ -1,0 +1,25 @@
+*,*::after,*::before{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.App{
+  height: 100vh;
+  background-color: honeydew;
+  width: 98vw;
+}
+
+.header{
+  height: 70px;
+  width: 100%;
+}
+
+.main{
+  height: calc(100vh - 70px);
+  width: 100%;
+}
+
+.blog-image{
+  height: calc(100vh - 70px);
+}
