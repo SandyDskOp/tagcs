@@ -13,8 +13,8 @@ const LOGIN_USER = Zod.object({
 })
 
 const GET_POST_SCHEMA = Zod.object({
-    page:Zod.number().min(1),
-    limit:Zod.number().min(10)
+    page:Zod.string(),
+    limit:Zod.string()
 })
 
 

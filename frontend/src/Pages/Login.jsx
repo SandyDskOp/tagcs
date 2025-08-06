@@ -7,11 +7,13 @@ import Form from "../Components/Form";
 import { NavLink, useNavigate } from "react-router-dom";
 import useClient from "../Hooks/useClient";
 import { useDispatch } from "react-redux";
+import Cookies from "js-cookie";
+import { LOGIN } from "../Redux/Slices/AuthSlice";
 
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const client = useClient();
+  const [client,authClient] = useClient();
   const [formdata, setFormdata] = useState({
     email: "",
     password: "",
@@ -23,7 +25,13 @@ const Login = () => {
     try {
       const result = await client.post("/user/login", formdata);
       if (result.status) {
-        navigate("/protected/post");
+        Cookies.set("authToken", result.token, {
+          path: '/',
+          sameSite: 'Lax', 
+        });
+        const profile = await getProfile() 
+        dispatch(LOGIN(profile))
+        navigate("/protected/post?page=1&limit=20")
       }
     } catch (err) {
       console.log(err);
@@ -31,6 +39,16 @@ const Login = () => {
       setLoading(false);
     }
   };
+
+  const getProfile = async()=>{
+    try {
+      const result = await authClient.get("/user/profile")
+      return result.user
+    } catch (err) {
+      console.log(err)
+      return null
+    }
+  }
 
   const handleChange =(e)=>{
     const {name,value} = e.target

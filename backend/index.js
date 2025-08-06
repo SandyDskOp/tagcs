@@ -10,10 +10,7 @@ const Router = require("./Routes/MainRoutes")
 const {DB_URL,API_PORT} = process.env
 const port = API_PORT || 3000
 
-app.use(cors({
-    origin:"http://localhost:5173/",
-    credentials:true
-}))
+app.use(cors())
 app.use("/api",Router)
 app.use((err,req,res,next)=>{
     console.log(err)

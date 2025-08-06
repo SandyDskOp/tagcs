@@ -3,7 +3,7 @@ const CatchAsync = require("../Utilities/CatchAsync")
 const JWT = require("jsonwebtoken")
 const {APP_SECRET} = process.env
 const Zod = require("zod")
-const {CREATE_USER_SCHEMA,LOGIN_USER} = require("../Schemas/UserSchemas")
+const {CREATE_USER_SCHEMA,LOGIN_USER,GET_POST_SCHEMA} = require("../Schemas/UserSchemas")
 const axios = require("axios")
 const PostModel = require("../Models/PostModel")
 
@@ -45,16 +45,9 @@ const loginUser = CatchAsync(async(req,res)=>{
         return res.status(400).json({status:false,message:"Password mismatch"})
     }
 
-   const token = await JWT.sign({id:user._id},APP_SECRET,{expiresIn:"1d"})
+   const token = JWT.sign({id:user._id},APP_SECRET,{expiresIn:"1d"})
 
-   res.cookie
-   ("authToken",token,{
-    httpOnly:true,
-    secure:false,
-    sameSite:"none"
-   })
-
-   return res.status(200).json({status:true,message:"Authentication done"})
+   return res.status(200).json({status:true,token:token})
 })
 
 const getProfile = CatchAsync(async(req,res)=>{
@@ -78,16 +71,16 @@ const uploadPosts = CatchAsync(async(req,res)=>{
 })
 
 const getPosts = CatchAsync(async(req,res)=>{
-    const {success,data:getPostData} = req.query
+    const {success,data:getPostData} = GET_POST_SCHEMA.safeParse(req.query) 
     if(!success){
         return res.status(400).json({status:false,message:"Validation failed"})
     }
 
     const {page,limit} = getPostData
     const totalDocuments = await PostModel.countDocuments()
-    const posts = await PostModel.find().sort({createdAt:-1}).skip((page-1)*limit).limit(limit)
+    const posts = await PostModel.find().sort({id:-1}).skip((page-1)*limit).limit(limit)
     const totalPages = Math.ceil(totalDocuments/limit)
 
-    return res.status(200).json({status:false,posts,totalPages})
+    return res.status(200).json({status:true,posts,totalPages})
 })
 module.exports = {createUser,loginUser,getProfile,uploadPosts,getPosts}

@@ -19,7 +19,7 @@ function App() {
     if (!isPending) {
       if (auth) {
         dispatch(LOGIN(auth));
-        navigate("/protected/post");
+        navigate("/protected/post?page=1&limit=20");
       }
     }
   }, [isPending]);
@@ -44,7 +44,7 @@ function App() {
           </header>
           <main className="main">
             <Routes>
-              <Route path="/" element={<AuthLayout />} />
+              <Route path="/*" element={<AuthLayout />} />
               <Route path="/protected/*" element={<ProtectedLayout />} />
               <Route
                 path="*"
